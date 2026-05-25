@@ -1,10 +1,23 @@
 import dotenv from "dotenv";
 import app from "./app";
+import { pool } from "./config/database";
 
 dotenv.config();
 
 const PORT = Number(process.env.PORT) || 3001;
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log("Database connected successfully");
+    connection.release();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
+};
+
+startServer();
