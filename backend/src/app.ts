@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { productRoutes } from "./routes/product.routes";
 
 const app = express();
 
@@ -14,5 +15,7 @@ app.get("/health", (_request, response) => {
     message: "API is running",
   });
 });
+
+app.use("/products", productRoutes);
 
 export default app;
