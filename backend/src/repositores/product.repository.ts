@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { pool } from "../config/database";
 import { Product } from "../types/product";
-import { CreateProductDTO } from "../schemas/product.schema";
+import { CreateProductDTO, UpdateProductDTO } from "../schemas/product.schema";
 
 interface ProductRow extends RowDataPacket {
   id: number;
@@ -54,6 +54,52 @@ export class ProductRepository {
     }
 
     return createdProduct;
+  }
+
+  async update(id: number, data: UpdateProductDTO): Promise<Product | null> {
+    const existingProduct = await this.findById(id);
+
+    if (!existingProduct) {
+      return null;
+    }
+
+    const updatedData = {
+      name: data.name ?? existingProduct.name,
+      description: data.description ?? existingProduct.description,
+      price: data.price ?? existingProduct.price,
+      category: data.category ?? existingProduct.category,
+      active: data.active ?? existingProduct.active,
+    };
+
+    const [result] = await pool.execute<ResultSetHeader>(
+      `UPDATE products
+      SET name = ?, description = ?, price = ?, category = ?, active = ?
+      WHERE id = ?`,
+      [
+        updatedData.name,
+        updatedData.description,
+        updatedData.price,
+        updatedData.category,
+        updatedData.active,
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return null;
+    }
+
+    return this.findById(id);
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const [result] = await pool.execute<ResultSetHeader>(
+      `DELETE FROM products
+      WHERE id = ?`,
+      [id]
+    );
+
+    return result.affectedRows > 0;
   }
 
   private mapRowToProduct(row: ProductRow): Product {

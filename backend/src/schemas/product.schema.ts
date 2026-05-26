@@ -8,4 +8,7 @@ export const createProductSchema = z.object({
   active: z.boolean(),
 });
 
+export const updateProductSchema = createProductSchema.partial();
+
 export type CreateProductDTO = z.infer<typeof createProductSchema>;
+export type UpdateProductDTO = z.infer<typeof updateProductSchema>;

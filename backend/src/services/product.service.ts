@@ -16,4 +16,12 @@ export class ProductService {
     async createProduct(data: CreateProductDTO): Promise<Product> {
         return this.productRepository.create(data);
     }
+
+    async updateProduct(id: number, data: Partial<CreateProductDTO>): Promise<Product | null> {
+        return this.productRepository.update(id, data);
+    }
+
+    async deleteProduct(id: number): Promise<boolean> {
+        return this.productRepository.delete(id);
+    }
 }
