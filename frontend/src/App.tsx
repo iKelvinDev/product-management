@@ -22,6 +22,8 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [message, setMessage] = useState<AlertState>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const loadProducts = async () => {
     try {
@@ -134,6 +136,16 @@ function App() {
     } catch {
       setMessage({ type: "danger", text: "Erro ao remover produto." });
     }
+  };
+
+  const handleShowDetails = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedProduct(null);
+    setIsDetailsModalOpen(false);
   };
 
   return (
@@ -306,7 +318,14 @@ function App() {
                             )}
                           </td>
                           <td>
-                            <div className="d-flex gap-2">
+                            <div className="d-flex gap-2 flex-wrap">
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-info text-white"
+                                onClick={() => handleShowDetails(product)}
+                              >
+                                Detalhar
+                              </button>
                               <button
                                 type="button"
                                 className="btn btn-sm btn-warning"
@@ -331,6 +350,100 @@ function App() {
               )}
             </div>
           </div>
+          {isDetailsModalOpen && selectedProduct && (
+            <>
+              <div
+                className="modal fade show d-block"
+                tabIndex={-1}
+                role="dialog"
+                aria-modal="true"
+              >
+                <div className="modal-dialog modal-lg modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h2 className="modal-title h5 mb-0">
+                        Detalhes do Produto
+                      </h2>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        aria-label="Fechar"
+                        onClick={handleCloseDetails}
+                      ></button>
+                    </div>
+
+                    <div className="modal-body">
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <strong>ID:</strong>
+                          <p className="mb-0">{selectedProduct.id}</p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Status:</strong>
+                          <p className="mb-0">
+                            {selectedProduct.active ? "Ativo" : "Inativo"}
+                          </p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Nome:</strong>
+                          <p className="mb-0">{selectedProduct.name}</p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Categoria:</strong>
+                          <p className="mb-0">{selectedProduct.category}</p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Preço:</strong>
+                          <p className="mb-0">
+                            R$ {selectedProduct.price.toFixed(2)}
+                          </p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Criado em:</strong>
+                          <p className="mb-0">
+                            {new Date(selectedProduct.createdAt).toLocaleString(
+                              "pt-BR",
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="col-md-6">
+                          <strong>Atualizado em:</strong>
+                          <p className="mb-0">
+                            {new Date(selectedProduct.updatedAt).toLocaleString(
+                              "pt-BR",
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="col-12">
+                          <strong>Descrição:</strong>
+                          <p className="mb-0">{selectedProduct.description}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={handleCloseDetails}
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-backdrop fade show"></div>
+            </>
+          )}
         </div>
       </div>
     </div>
