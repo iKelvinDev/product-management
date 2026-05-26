@@ -1,15 +1,30 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ProductService } from "../services/product.service";
 import { createProductSchema, updateProductSchema } from "../schemas/product.schema";
 
 export class ProductController {
+
   constructor(private readonly productService: ProductService) {}
-    getAll = async (_request: Request, response: Response): Promise<void> => {
-      const products = await this.productService.getAllProducts();
-      response.status(200).json(products);
+
+    getAll = async (
+        _request: Request, 
+        response: Response,
+        next: NextFunction
+        ): Promise<void> => {
+        try {
+            const products = await this.productService.getAllProducts();
+            response.status(200).json(products);
+        } catch (error) {
+            next(error);
+        }
     };
 
-    getById = async (request: Request, response: Response): Promise<void> => {
+    getById = async (
+        request: Request, 
+        response: Response,
+        next: NextFunction
+    ): Promise<void> => {
+        try {
         const id = Number(request.params.id);
 
         if (Number.isNaN(id)) {
@@ -25,9 +40,17 @@ export class ProductController {
         }
 
         response.status(200).json(product);
+        } catch (error) {
+            next(error);
+        }
     };
 
-    create = async (request: Request, response: Response): Promise<void> => {
+    create = async (
+        request: Request, 
+        response: Response, 
+        next: NextFunction
+    ): Promise<void> => {
+        try {
         const result = createProductSchema.safeParse(request.body);
 
         if (!result.success) {
@@ -41,9 +64,17 @@ export class ProductController {
         const product = await this.productService.createProduct(result.data);
 
         response.status(201).json(product);
+        } catch (error) {
+            next(error);
+        }
     };
 
-    update = async (request: Request, response: Response): Promise<void> => {
+    update = async (
+        request: Request, 
+        response: Response, 
+        next: NextFunction
+    ): Promise<void> => {
+        try {
         const id = Number(request.params.id);
 
         if (Number.isNaN(id)) {
@@ -76,10 +107,18 @@ export class ProductController {
         }
 
         response.status(200).json(updatedProduct);
+        } catch (error) {
+            next(error);
+        }
     };
 
-    delete = async (request: Request, response: Response): Promise<void> => {
-        const id = Number(request.params.id);
+    delete = async (
+        request: Request, 
+        response: Response, 
+        next: NextFunction
+    ): Promise<void> => {
+        try {
+            const id = Number(request.params.id);
 
         if (Number.isNaN(id)) {
             response.status(400).json({ message: "ID de produto inválido" });
@@ -94,5 +133,8 @@ export class ProductController {
         }
 
         response.status(200).json({ message: "Produto deletado com sucesso" });
+        } catch (error) {
+            next(error);
+        }
     };
 }
