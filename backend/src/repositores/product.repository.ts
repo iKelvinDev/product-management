@@ -10,8 +10,8 @@ interface ProductRow extends RowDataPacket {
   price: number;
   category: string;
   active: number | boolean;
-  created_at: Date | string;
-  updated_at: Date | string;
+  created_at: string;
+  updated_at: string;
 }
 
 export class ProductRepository {
@@ -110,8 +110,8 @@ export class ProductRepository {
       price: Number(row.price),
       category: row.category,
       active: Boolean(row.active),
-      createdAt: new Date(row.created_at).toISOString(),
-      updatedAt: new Date(row.updated_at).toISOString(),
+      createdAt: String(row.created_at),
+      updatedAt: String(row.updated_at),
     };
   }
 }

@@ -9,6 +9,9 @@ const PORT = Number(process.env.PORT) || 3001;
 const startServer = async () => {
   try {
     const connection = await pool.getConnection();
+
+    await connection.query("SET time_zone = '-03:00'");
+
     console.log("Database connected successfully");
     connection.release();
 
